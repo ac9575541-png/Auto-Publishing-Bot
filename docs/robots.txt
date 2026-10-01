@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ac9575541-png.github.io/Auto-Publishing-Bot/sitemap.xml
