@@ -1,0 +1,39 @@
+name: Auto Publish SEO Content
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Runs automatically every day at 06:00 UTC
+  workflow_dispatch:      # Allows you to click "Run workflow" manually anytime
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Publishing Bot
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SITE_URL: "https://ac9575541-png.github.io/Auto-Publishing-Bot"
+        run: python main.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/ published.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-published new SEO article" && git push)
